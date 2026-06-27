@@ -139,7 +139,7 @@
                         HorizontalAlignment="Center"
                         Kind="Microphone" />
                     <TextBlock
-                        Foreground="{StaticResource MaterialDesign.Brush.Primary.Light.Foreground}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Primary.Light.Foreground}"
                         Text="{Binding MaxRecordingTimeString}"
                         Visibility="{Binding IsMaxRecordingTimeSpecified, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
