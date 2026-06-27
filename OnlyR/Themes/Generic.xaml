@@ -10,8 +10,8 @@
                 <ControlTemplate TargetType="{x:Type volumeMeter:VduControl}">
                     <Border
                         Padding="2"
-                        Background="{DynamicResource MaterialDesignPaper}"
-                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        Background="{DynamicResource MaterialDesign.Brush.Background}"
+                        BorderBrush="{DynamicResource MaterialDesign.Brush.TextBox.HoverBackground}"
                         BorderThickness="1">
 
                         <Border

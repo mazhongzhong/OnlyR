@@ -8,11 +8,11 @@
     xmlns:resx="clr-namespace:OnlyR.Properties"
     d:DesignHeight="688"
     d:DesignWidth="268"
-    Background="{DynamicResource MaterialDesignPaper}"
+    Background="{DynamicResource MaterialDesign.Brush.Background}"
     FontFamily="{DynamicResource MaterialDesignFont}"
     TextElement.FontSize="13"
     TextElement.FontWeight="Regular"
-    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
     TextOptions.TextFormattingMode="Ideal"
     TextOptions.TextRenderingMode="Auto"
     mc:Ignorable="d">
@@ -23,7 +23,6 @@
             BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}"
             TargetType="{x:Type ComboBox}">
             <Setter Property="Margin" Value="0,0,0,10" />
-            <Setter Property="materialDesign:ComboBoxAssist.ClassicMode" Value="true" />
         </Style>
 
         <Style
@@ -44,7 +43,7 @@
         </Style>
 
         <Style x:Key="MiscNotesStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}" />
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesign.Brush.ForegroundLight}" />
             <Setter Property="FontSize" Value="11" />
         </Style>
 
@@ -93,7 +92,7 @@
                 <TextBlock
                     Margin="0,10,0,10"
                     FontSize="10"
-                    Foreground="{DynamicResource MaterialDesignBody}"
+                    Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                     Text="{Binding AppVersionStr}" />
 
                 <ComboBox
