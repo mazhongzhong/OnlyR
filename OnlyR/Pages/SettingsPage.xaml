@@ -27,7 +27,7 @@
 
         <Style
             x:Key="SliderStyle"
-            BasedOn="{StaticResource MaterialDesignSlider}"
+            BasedOn="{StaticResource MaterialDesign3.MaterialDesignSlider}"
             TargetType="{x:Type Slider}">
             <Setter Property="Margin" Value="0,0,0,10" />
             <Setter Property="Orientation" Value="Horizontal" />
