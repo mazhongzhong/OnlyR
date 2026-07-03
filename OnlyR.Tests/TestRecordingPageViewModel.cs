@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 
 namespace OnlyR.Tests;
 
+// CreateViewModel resets the global WeakReferenceMessenger, so every test in
+// this class must serialise with the other messenger-dependent tests.
+[NotInParallel("Messenger")]
 public sealed class TestRecordingPageViewModel
 {
     [Test]
