@@ -10,17 +10,21 @@
     xmlns:volumeMeter="clr-namespace:OnlyR.VolumeMeter"
     d:DesignHeight="330"
     d:DesignWidth="300"
-    Background="{DynamicResource MaterialDesignPaper}"
+    Background="{DynamicResource MaterialDesign.Brush.Background}"
     FontFamily="{DynamicResource MaterialDesignFont}"
     TextElement.FontSize="13"
     TextElement.FontWeight="Regular"
-    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
     TextOptions.TextFormattingMode="Ideal"
     TextOptions.TextRenderingMode="Auto"
     mc:Ignorable="d">
     <UserControl.Resources>
 
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <materialDesign:BooleanToVisibilityConverter
+            x:Key="InverseBoolToVisConverter"
+            FalseValue="Visible"
+            TrueValue="Collapsed" />
 
         <Style
             x:Key="StartRecordingBtnStyle"
@@ -35,7 +39,7 @@
 
         <Style
             x:Key="StopRecordingBtnStyle"
-            BasedOn="{StaticResource MaterialDesignRaisedAccentButton}"
+            BasedOn="{StaticResource MaterialDesignRaisedSecondaryButton}"
             TargetType="{x:Type Button}">
             <Setter Property="Height" Value="85" />
             <Setter Property="Grid.Column" Value="1" />
@@ -135,9 +139,9 @@
                         HorizontalAlignment="Center"
                         Kind="Microphone" />
                     <TextBlock
-                        Foreground="{StaticResource PrimaryHueLightForegroundBrush}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Primary.Light.Foreground}"
                         Text="{Binding MaxRecordingTimeString}"
-                        Visibility="{Binding IsMaxRecordingTimeSpecified, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        Visibility="{Binding IsMaxRecordingTimeSpecified, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
             </Button>
 
@@ -176,7 +180,7 @@
                     AutomationProperties.Name="{x:Static resx:Resources.STOP_RECORDING_TOOLTIP}"
                     Command="{Binding StopRecordingCommand}"
                     IsEnabled="{Binding IsRecordingOrPaused}"
-                    Style="{StaticResource MaterialDesignRaisedAccentButton}"
+                    Style="{StaticResource MaterialDesignRaisedSecondaryButton}"
                     ToolTip="{x:Static resx:Resources.STOP_RECORDING_TOOLTIP}">
                     <materialDesign:PackIcon
                         Width="44"
@@ -229,14 +233,14 @@
                     <TextBlock
                         DockPanel.Dock="Top"
                         AutomationProperties.LiveSetting="Polite"
-                        Foreground="{DynamicResource MaterialDesignBody}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                         Text="{Binding StatusStr}"
                         TextWrapping="Wrap" />
                     <TextBlock
                         DockPanel.Dock="Top"
                         FontSize="32"
                         AutomationProperties.LiveSetting="Off"
-                        Foreground="{DynamicResource MaterialDesignBody}"
+                        Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
                         Text="{Binding ElapsedTimeStr}"
                         TextWrapping="Wrap" />
                     <TextBlock

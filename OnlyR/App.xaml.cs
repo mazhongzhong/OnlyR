@@ -127,7 +127,7 @@ public partial class App
 
         var paletteHelper = new PaletteHelper();
         var theme = paletteHelper.GetTheme();
-        theme.SetBaseTheme(isDark ? Theme.Dark : Theme.Light);
+        theme.SetBaseTheme(isDark ? BaseTheme.Dark : BaseTheme.Light);
         paletteHelper.SetTheme(theme);
 
         ApplyTitleBarTheme(isDark);
