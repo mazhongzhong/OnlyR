@@ -525,6 +525,7 @@ public class SettingsPageViewModel : ObservableObject, IPage
             CreateLanguageItem("pt-PT"),
             CreateLanguageItem("ro-RO"),
             CreateLanguageItem("ru-RU"),
+            //CreateLanguageItem("sl-SI"), ready fo Slovenian
             CreateLanguageItem("sv-SE"),
             CreateLanguageItem("tr-TR"),
             CreateLanguageItem("vi-VN"),
