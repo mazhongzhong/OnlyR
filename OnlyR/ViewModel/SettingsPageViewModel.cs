@@ -517,6 +517,7 @@ public class SettingsPageViewModel : ObservableObject, IPage
             CreateLanguageItem("fr-FR"),
             CreateLanguageItem("hu-HU"),
             CreateLanguageItem("it-IT"),
+            CreateLanguageItem("ja-JP"),
             CreateLanguageItem("lv-LV"),
             CreateLanguageItem("no"),
             CreateLanguageItem("pl-PL"),
