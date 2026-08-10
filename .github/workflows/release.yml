@@ -1,0 +1,174 @@
+name: Publish portable release
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'SolutionInfo.cs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portable-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup .NET (x64)
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup .NET (x86)
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+          architecture: x86
+
+      - name: Read release version
+        id: version
+        shell: pwsh
+        run: |
+          $source = Get-Content './SolutionInfo.cs' -Raw
+          $match = [regex]::Match($source, 'AssemblyVersion\("(?<version>\d+\.\d+\.\d+\.\d+)"\)')
+          if (-not $match.Success) {
+            Write-Error 'Could not read AssemblyVersion from SolutionInfo.cs'
+            exit 1
+          }
+
+          $version = $match.Groups['version'].Value
+          $tag = "v$version"
+          "version=$version" >> $env:GITHUB_OUTPUT
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "Version: $version"
+          "Tag: $tag"
+
+      - name: Verify release does not already exist
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Error "Release already exists: $env:RELEASE_TAG"
+            exit 1
+          }
+
+      - name: Build
+        run: dotnet build OnlyR.slnx --configuration Release
+
+      - name: Test
+        run: dotnet test --project OnlyR.Tests/OnlyR.Tests.csproj --configuration Release --no-build
+
+      - name: Verify formatting
+        run: dotnet format OnlyR.slnx --verify-no-changes --no-restore
+
+      - name: Publish portable package
+        run: dotnet publish OnlyR/OnlyR.csproj --configuration Release --runtime win-x86 --self-contained true --output ./publish/OnlyR -p:PublishSingleFile=false -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false
+
+      - name: Add distribution notices
+        shell: pwsh
+        run: |
+          Copy-Item './LICENSE' './publish/OnlyR/LICENSE.txt'
+          Copy-Item './FORK-NOTICE.txt' './publish/OnlyR/FORK-NOTICE.txt'
+          Copy-Item './THIRD-PARTY-NOTICES.txt' './publish/OnlyR/THIRD-PARTY-NOTICES.txt'
+          Copy-Item './LAME-COPYING.txt' './publish/OnlyR/LAME-COPYING.txt'
+
+      - name: Add LAME corresponding source
+        shell: pwsh
+        run: |
+          $sourceUrl = 'https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz'
+          $sourcePath = './publish/OnlyR/lame-3.100-source.tar.gz'
+          $expectedHash = 'ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e'
+
+          Invoke-WebRequest -Uri $sourceUrl -OutFile $sourcePath
+          $actualHash = (Get-FileHash $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actualHash -ne $expectedHash) {
+            Write-Error "Unexpected LAME source SHA-256: $actualHash"
+            exit 1
+          }
+
+      - name: Create and verify ZIP
+        id: package
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+          $publishFolder = Resolve-Path './publish/OnlyR'
+          $releaseFolder = New-Item -ItemType Directory -Force './release'
+          $zipName = "OnlyR-portable-win-x86-v$env:RELEASE_VERSION.zip"
+          $zipPath = Join-Path $releaseFolder.FullName $zipName
+
+          Compress-Archive -Path (Join-Path $publishFolder '*') -DestinationPath $zipPath -CompressionLevel Optimal
+
+          $archive = [System.IO.Compression.ZipFile]::OpenRead($zipPath)
+          try {
+            $entryNames = $archive.Entries.FullName
+            $requiredFiles = @(
+              'OnlyR.exe',
+              'LICENSE.txt',
+              'FORK-NOTICE.txt',
+              'THIRD-PARTY-NOTICES.txt',
+              'LAME-COPYING.txt',
+              'lame-3.100-source.tar.gz'
+            )
+            foreach ($requiredFile in $requiredFiles) {
+              if ($entryNames -notcontains $requiredFile) {
+                Write-Error "Required release file missing from ZIP: $requiredFile"
+                exit 1
+              }
+            }
+          }
+          finally {
+            $archive.Dispose()
+          }
+
+          $checksumPath = "$zipPath.sha256"
+          $hash = (Get-FileHash $zipPath -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  $zipName" | Set-Content $checksumPath -Encoding ascii
+
+          "zip_path=$zipPath" >> $env:GITHUB_OUTPUT
+          "checksum_path=$checksumPath" >> $env:GITHUB_OUTPUT
+          "ZIP: $zipPath"
+          "SHA-256: $hash"
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          ZIP_PATH: ${{ steps.package.outputs.zip_path }}
+          CHECKSUM_PATH: ${{ steps.package.outputs.checksum_path }}
+        run: |
+          $notesPath = "./docs/release-notes-v$env:RELEASE_VERSION.md"
+          if (-not (Test-Path $notesPath)) {
+            Write-Error "Release notes not found: $notesPath"
+            exit 1
+          }
+
+          gh release create $env:RELEASE_TAG `
+            $env:ZIP_PATH `
+            $env:CHECKSUM_PATH `
+            --repo $env:GITHUB_REPOSITORY `
+            --target $env:GITHUB_SHA `
+            --title "OnlyR Tray Edition $env:RELEASE_VERSION" `
+            --notes-file $notesPath `
+            --latest

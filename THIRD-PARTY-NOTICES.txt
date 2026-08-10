@@ -1,0 +1,77 @@
+OnlyR Tray Edition - Third-Party Notices
+========================================
+
+This distribution contains third-party components. The following list covers
+the direct runtime dependencies declared by this repository. Copyright remains
+with the respective authors and contributors.
+
+NAudio.Lame 2.1.0
+-----------------
+License: MIT
+Copyright (c) 2013-2019 Corey Murtagh
+Project: https://github.com/Corey-M/NAudio.Lame
+License: https://github.com/Corey-M/NAudio.Lame/blob/master/LICENSE.txt
+
+NAudio.Lame includes Windows native libmp3lame DLLs. The native library used by
+this package identifies itself as LAME 3.100 and is used by OnlyR for MP3
+encoding. LAME is licensed under the GNU Library General Public License,
+version 2 or, at the recipient's option, any later version. A verbatim copy of
+the version 2 license is included as LAME-COPYING.txt.
+
+Official LAME project: https://lame.sourceforge.io/
+LAME 3.100 source: https://sourceforge.net/projects/lame/files/lame/3.100/
+
+OnlyR does not modify libmp3lame. Recipients may inspect, replace, or rebuild
+the separately loaded native library in accordance with its license. The
+official LAME 3.100 source archive is included in the formal portable release.
+
+Other direct runtime dependencies
+---------------------------------
+
+- NAudio.Wasapi 2.3.0 — MIT — https://github.com/naudio/NAudio
+- NAudio.WinForms 2.3.0 — MIT — https://github.com/naudio/NAudio
+- Microsoft.Windows.Compatibility 10.0.10 — MIT — https://dot.net/
+- CommunityToolkit.Mvvm 8.4.2 — MIT — https://github.com/CommunityToolkit/dotnet
+- MaterialDesignThemes 5.3.2 — MIT — https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit
+- Microsoft.Extensions.DependencyInjection 10.0.10 — MIT — https://dot.net/
+- Newtonsoft.Json 13.0.4 — MIT — https://www.newtonsoft.com/json
+- Serilog.Sinks.File 7.0.0 — Apache-2.0 — https://github.com/serilog/serilog-sinks-file
+
+Fluent Command Line Parser 1.4.3.13
+-----------------------------------
+FreeBSD License
+
+Fluent Command Line Parser
+Copyright (c) 2012 - 2013, Simon Williams
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Project: https://github.com/fclp/fluent-command-line-parser
+License: https://github.com/fclp/fluent-command-line-parser/blob/develop/LICENCE.txt
+
+Package metadata and transitive components
+------------------------------------------
+
+The authoritative version and license metadata for NuGet packages is available
+from https://www.nuget.org/. Self-contained .NET runtime files retain their
+applicable Microsoft and third-party license terms.

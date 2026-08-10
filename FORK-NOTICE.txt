@@ -1,0 +1,24 @@
+OnlyR Tray Edition - Unofficial Fork Notice
+===========================================
+
+This distribution is built from the public repository:
+https://github.com/mazhongzhong/OnlyR
+
+It is an unofficial fork of the original OnlyR project:
+https://github.com/AntonyCorbett/OnlyR
+
+Original OnlyR copyright:
+Copyright (c) 2017 AntonyCorbett
+
+The original project and this fork are distributed under the MIT License. The
+complete license text is included in LICENSE.txt and in the source repository.
+Third-party component notices and applicable license references are included in
+THIRD-PARTY-NOTICES.txt. The LAME license is included in LAME-COPYING.txt.
+
+Fork-specific changes include Windows notification-area controls,
+recording-state presentation, close-to-tray behavior, automated portable
+packaging, and related tests and documentation.
+
+This fork is not an official release of, affiliated with, or endorsed by the
+original project maintainer. The original copyright and MIT permission notice
+have been retained.
