@@ -246,6 +246,10 @@
     <value>允许录音时关闭</value>
     <comment>Settings page checkbox title</comment>
   </data>
+  <data name="SETTINGS_CLOSE_TO_TRAY" xml:space="preserve">
+    <value>点击关闭按钮时仅在托盘显示</value>
+    <comment>Settings page checkbox title</comment>
+  </data>
   <data name="SETTINGS_ALWAYS_ON_TOP" xml:space="preserve">
     <value>在最上层显示</value>
     <comment>Settings page checkbox title</comment>

@@ -246,6 +246,10 @@
     <value>Allow close when recording</value>
     <comment>Settings page checkbox title</comment>
   </data>
+  <data name="SETTINGS_CLOSE_TO_TRAY" xml:space="preserve">
+    <value>Close button shows only in notification area</value>
+    <comment>Settings page checkbox title</comment>
+  </data>
   <data name="SETTINGS_ALWAYS_ON_TOP" xml:space="preserve">
     <value>Always on top</value>
     <comment>Settings page checkbox title</comment>

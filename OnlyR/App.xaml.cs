@@ -11,6 +11,7 @@ using OnlyR.Services.PurgeRecordings;
 using OnlyR.Services.RecordingCopies;
 using OnlyR.Services.RecordingDestination;
 using OnlyR.Services.Snackbar;
+using OnlyR.Services.Tray;
 using OnlyR.Utils;
 using OnlyR.ViewModel;
 using OnlyR.ViewModel.Messages;
@@ -38,23 +39,25 @@ public partial class App
 {
     private readonly string _appString = "OnlyRAudioRecording";
     private Mutex? _appMutex;
+    private ITrayIconService? _trayIconService;
 
     protected override void OnStartup(StartupEventArgs e)
     {
         if (AnotherInstanceRunning())
         {
             Shutdown();
-        }
-        else
-        {
-            ConfigureLogger();
+            return;
         }
 
+        ConfigureLogger();
         ConfigureServices();
         ApplyStartupTheme();
 
         SystemEvents.UserPreferenceChanged += OnSystemThemeChanged;
         Current.DispatcherUnhandledException += CurrentDispatcherUnhandledException;
+
+        _trayIconService = Ioc.Default.GetService<ITrayIconService>();
+        _trayIconService?.Initialize();
     }
 
     private void CurrentDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -79,6 +82,7 @@ public partial class App
         serviceCollection.AddSingleton<IPurgeRecordingsService, PurgeRecordingsService>();
         serviceCollection.AddSingleton<ISilenceService, SilenceService>();
         serviceCollection.AddSingleton<MainViewModel>();
+        serviceCollection.AddSingleton<ITrayIconService, TrayIconService>();
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
         Ioc.Default.ConfigureServices(serviceProvider);
@@ -86,6 +90,7 @@ public partial class App
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _trayIconService?.Dispose();
         SystemEvents.UserPreferenceChanged -= OnSystemThemeChanged;
         _appMutex?.Dispose();
         Log.Logger.Information("==== Exit ====");

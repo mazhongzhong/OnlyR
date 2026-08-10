@@ -35,6 +35,7 @@ public class MainViewModel : ObservableObject
     private readonly IAudioService _audioService;
     private readonly ISnackbarService _snackbarService;
     private readonly IPurgeRecordingsService _purgeRecordingsService;
+    private readonly RecordingPageViewModel _recordingPageViewModel;
     private readonly (string TempPath, string FinalPath)? _unfinishedRecordingFileFoundOnStartup;
     private FrameworkElement? _currentPage;
 
@@ -69,17 +70,19 @@ public class MainViewModel : ObservableObject
         _purgeRecordingsService = purgeRecordingsService;
 
         // set up pages...
+        _recordingPageViewModel = new RecordingPageViewModel(
+            audioService,
+            optionsService,
+            commandLineService,
+            destService,
+            copyRecordingsService,
+            snackbarService,
+            silenceService);
+
         SetupPage(
             RecordingPageViewModel.PageName,
             new RecordingPage(),
-            new RecordingPageViewModel(
-                audioService,
-                optionsService,
-                commandLineService,
-                destService,
-                copyRecordingsService,
-                snackbarService,
-                silenceService));
+            _recordingPageViewModel);
 
         SetupPage(
             SettingsPageViewModel.PageName,
@@ -109,6 +112,8 @@ public class MainViewModel : ObservableObject
 
     public bool AlwaysOnTop => _optionsService.Options.AlwaysOnTop;
 
+    internal RecordingPageViewModel RecordingPage => _recordingPageViewModel;
+
     public FrameworkElement? CurrentPage
     {
         get => _currentPage;
@@ -124,11 +129,9 @@ public class MainViewModel : ObservableObject
 
     public void Closing(object sender, CancelEventArgs e)
     {
-        var recordingPageModel = (RecordingPageViewModel)_pages[RecordingPageViewModel.PageName].DataContext;
-
         if (_optionsService.Options.AllowCloseWhenRecording)
         {
-            if (recordingPageModel.IsRecordingOrStopping)
+            if (_recordingPageViewModel.IsRecordingOrStopping)
             {
                 e.Cancel = true;
                 _audioService.StoppedEvent += RecordingStoppedDuringAppClose;
@@ -138,7 +141,7 @@ public class MainViewModel : ObservableObject
         else
         {
             // prevent window closing when recording...
-            recordingPageModel.Closing(sender, e);
+            _recordingPageViewModel.Closing(sender, e);
 
             if (!e.Cancel)
             {
