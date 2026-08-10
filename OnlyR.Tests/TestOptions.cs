@@ -96,4 +96,27 @@ public sealed class TestOptions
 
         await Assert.That(options.AppTheme).IsEqualTo(AppTheme.System);
     }
+
+    [Test]
+    public async Task CloseToTrayDefaultsToTrueForExistingOptionsFiles()
+    {
+        const string json = """{ "SampleRate": 44100 }""";
+
+        var options = JsonConvert.DeserializeObject<Options>(json);
+
+        await Assert.That(options).IsNotNull();
+        await Assert.That(options!.CloseToTray).IsTrue();
+    }
+
+    [Test]
+    public async Task CloseToTrayFalseRoundTrips()
+    {
+        var original = new Options { CloseToTray = false };
+
+        var json = JsonConvert.SerializeObject(original);
+        var restored = JsonConvert.DeserializeObject<Options>(json);
+
+        await Assert.That(restored).IsNotNull();
+        await Assert.That(restored!.CloseToTray).IsFalse();
+    }
 }

@@ -204,7 +204,18 @@ public sealed class TrayIconService : ITrayIconService
 
     private static void ExitMenuItemClick(object? sender, EventArgs e)
     {
-        RunOnUiThread(() => Application.Current?.MainWindow?.Close());
+        RunOnUiThread(() =>
+        {
+            var window = Application.Current?.MainWindow;
+            if (window is OnlyR.MainWindow mainWindow)
+            {
+                mainWindow.RequestExit();
+            }
+            else
+            {
+                window?.Close();
+            }
+        });
     }
 
     private static void ShowMainWindowCore()

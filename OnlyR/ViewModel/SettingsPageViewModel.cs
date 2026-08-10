@@ -265,6 +265,18 @@ public class SettingsPageViewModel : ObservableObject, IPage
         }
     }
 
+    public bool CloseToTray
+    {
+        get => _optionsService.Options.CloseToTray;
+        set
+        {
+            if (_optionsService.Options.CloseToTray != value)
+            {
+                _optionsService.Options.CloseToTray = value;
+            }
+        }
+    }
+
     public string? Genre
     {
         get => _optionsService.Options.Genre;

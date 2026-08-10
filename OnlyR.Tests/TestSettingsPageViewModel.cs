@@ -261,6 +261,20 @@ public sealed class TestSettingsPageViewModel
 
     [Test]
     [NotInParallel("Messenger")]
+    public async Task CloseToTrayMatchesOptions()
+    {
+        var result = await StaThreadHelper.RunOnSta(() =>
+        {
+            var vm = CreateViewModel(new Options { CloseToTray = true });
+            vm.CloseToTray = false;
+            return vm.CloseToTray;
+        });
+
+        await Assert.That(result).IsFalse();
+    }
+
+    [Test]
+    [NotInParallel("Messenger")]
     public async Task GenreRoundTrips()
     {
         var result = await StaThreadHelper.RunOnSta(() =>

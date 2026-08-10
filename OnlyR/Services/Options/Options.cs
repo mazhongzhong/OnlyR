@@ -40,6 +40,7 @@ public class Options
         RecordingsLifeTimeDays = 0; // forever
         SilenceAsVolumePercentage = DefaultSilenceAsVolumePercentage;
         Codec = AudioCodec.Mp3; // default to MP3
+        CloseToTray = true;
     }
 
     public int MaxRecordingsInOneFolder { get; set; }
@@ -85,6 +86,8 @@ public class Options
     public bool AlwaysOnTop { get; set; }
 
     public bool AllowCloseWhenRecording { get; set; }
+
+    public bool CloseToTray { get; set; }
 
     public int RecordingsLifeTimeDays { get; set; }
 

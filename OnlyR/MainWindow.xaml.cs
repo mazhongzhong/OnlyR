@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Messaging;
 using OnlyR.Services.Options;
+using OnlyR.Services.Tray;
 using OnlyR.Utils;
 using OnlyR.ViewModel;
 using OnlyR.ViewModel.Messages;
@@ -25,6 +26,7 @@ public partial class MainWindow
 
     private const double SettingsWindowMaxWidth = 500;
     private const double SettingsWindowMaxHeight = 770;
+    private bool _exitRequested;
 
     public MainWindow()
     {
@@ -122,6 +124,12 @@ public partial class MainWindow
         Close();
     }
 
+    internal void RequestExit()
+    {
+        _exitRequested = true;
+        Close();
+    }
+
     private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         SaveWindowPos();
@@ -134,7 +142,24 @@ public partial class MainWindow
             SaveSettingsWindowSize();
         }
 
+        var optionsService = Ioc.Default.GetService<IOptionsService>();
+        var closeToTray = optionsService?.Options.CloseToTray ?? false;
+        if (WindowClosePolicy.GetAction(closeToTray, _exitRequested) == WindowCloseAction.HideToTray)
+        {
+            e.Cancel = true;
+            ShowInTaskbar = false;
+            Hide();
+            return;
+        }
+
         m.Closing(sender, e);
+
+        // When the existing close policy blocks a requested exit, a later click on X
+        // must once again obey CloseToTray rather than inheriting a stale exit request.
+        if (e.Cancel && _exitRequested && optionsService?.Options.AllowCloseWhenRecording != true)
+        {
+            _exitRequested = false;
+        }
     }
 
     private void SaveWindowPos()

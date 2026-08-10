@@ -446,6 +446,15 @@ namespace OnlyR.Properties {
                 return ResourceManager.GetString("SETTINGS_ALLOW_CLOSE", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Close button shows only in notification area.
+        /// </summary>
+        public static string SETTINGS_CLOSE_TO_TRAY {
+            get {
+                return ResourceManager.GetString("SETTINGS_CLOSE_TO_TRAY", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Always on top.
