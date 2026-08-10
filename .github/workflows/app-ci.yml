@@ -69,6 +69,40 @@ jobs:
       - name: Test
         run: dotnet test --project OnlyR.Tests/OnlyR.Tests.csproj --configuration Release --no-build --report-trx --report-trx-filename test-results.trx --results-directory ./test-results
 
+      - name: Publish portable test package
+        run: dotnet publish OnlyR/OnlyR.csproj --configuration Release --runtime win-x86 --self-contained true --output ./publish/OnlyR -p:PublishSingleFile=false -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false
+
+      - name: Verify portable test package
+        shell: pwsh
+        run: |
+          $publishFolder = './publish/OnlyR'
+          $executable = Join-Path $publishFolder 'OnlyR.exe'
+          if (-not (Test-Path $executable)) {
+            Write-Error "Portable executable not found: $executable"
+            exit 1
+          }
+
+          $files = Get-ChildItem $publishFolder -File -Recurse
+          $sizeBytes = ($files | Measure-Object Length -Sum).Sum
+          $sizeMb = [Math]::Round($sizeBytes / 1MB, 1)
+
+          "## Portable test package" >> $env:GITHUB_STEP_SUMMARY
+          "" >> $env:GITHUB_STEP_SUMMARY
+          "- Runtime: win-x86" >> $env:GITHUB_STEP_SUMMARY
+          "- Deployment: self-contained" >> $env:GITHUB_STEP_SUMMARY
+          "- Files: $($files.Count)" >> $env:GITHUB_STEP_SUMMARY
+          "- Uncompressed size: $sizeMb MB" >> $env:GITHUB_STEP_SUMMARY
+
+          Write-Host "Portable package: $($files.Count) files, $sizeMb MB"
+
+      - name: Upload portable test package
+        uses: actions/upload-artifact@v7
+        with:
+          name: OnlyR-portable-win-x86-${{ github.sha }}
+          path: ./publish/OnlyR
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Summarize test results
         if: always()
         shell: pwsh
