@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'SolutionInfo.cs'
+      - '.github/workflows/release.yml'
   workflow_dispatch:
 
 permissions:
@@ -64,7 +65,10 @@ jobs:
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
         run: |
           gh release view $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY *> $null
-          if ($LASTEXITCODE -eq 0) {
+          $releaseExists = $LASTEXITCODE -eq 0
+          $global:LASTEXITCODE = 0
+
+          if ($releaseExists) {
             Write-Error "Release already exists: $env:RELEASE_TAG"
             exit 1
           }
