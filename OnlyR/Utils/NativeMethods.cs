@@ -22,6 +22,10 @@ internal static class NativeMethods
     [DllImport("user32.dll")]
     public static extern bool GetWindowPlacement(IntPtr hWnd, out WINDOWPLACEMENT lpwndpl);
 
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool DestroyIcon(IntPtr hIcon);
+
     public const int DwmwaUseImmersiveDarkMode = 20;
 
     [DllImport("dwmapi.dll", PreserveSig = true)]
