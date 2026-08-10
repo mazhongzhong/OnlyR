@@ -2,12 +2,35 @@ name: App CI
 
 on:
   push:
-    branches: [master]
-    paths: ['**/*.csproj', '**/*.cs', '.editorconfig', 'Directory.Packages.props', 'Directory.Build.props', '.github/workflows/app-ci.yml']
+    branches:
+      - master
+      - feature/tray-integration
+    paths:
+      - '**/*.csproj'
+      - '**/*.slnx'
+      - '**/*.cs'
+      - '**/*.xaml'
+      - '**/*.resx'
+      - '**/*.ico'
+      - '.editorconfig'
+      - 'Directory.Packages.props'
+      - 'Directory.Build.props'
+      - '.github/workflows/app-ci.yml'
   pull_request:
-    branches: [master]
+    branches:
+      - master
     types: [opened, synchronize, reopened]
-    paths: ['**/*.csproj', '**/*.cs', '.editorconfig', 'Directory.Packages.props', 'Directory.Build.props', '.github/workflows/app-ci.yml']
+    paths:
+      - '**/*.csproj'
+      - '**/*.slnx'
+      - '**/*.cs'
+      - '**/*.xaml'
+      - '**/*.resx'
+      - '**/*.ico'
+      - '.editorconfig'
+      - 'Directory.Packages.props'
+      - 'Directory.Build.props'
+      - '.github/workflows/app-ci.yml'
 
 env:
   DOTNET_NOLOGO: true
@@ -46,12 +69,40 @@ jobs:
       - name: Test
         run: dotnet test --project OnlyR.Tests/OnlyR.Tests.csproj --configuration Release --no-build --report-trx --report-trx-filename test-results.trx --results-directory ./test-results
 
+      - name: Summarize test results
+        if: always()
+        shell: pwsh
+        run: |
+          $resultFile = './test-results/test-results.trx'
+          if (-not (Test-Path $resultFile)) {
+            Write-Error "Test result file not found: $resultFile"
+            exit 1
+          }
+
+          [xml]$trx = Get-Content $resultFile
+          $counters = $trx.TestRun.ResultSummary.Counters
+          $total = [int]$counters.total
+          $executed = [int]$counters.executed
+          $passed = [int]$counters.passed
+          $failed = [int]$counters.failed
+          $skipped = [int]$counters.notExecuted
+
+          "## Test results" >> $env:GITHUB_STEP_SUMMARY
+          "" >> $env:GITHUB_STEP_SUMMARY
+          "| Total | Executed | Passed | Failed | Skipped |" >> $env:GITHUB_STEP_SUMMARY
+          "| ---: | ---: | ---: | ---: | ---: |" >> $env:GITHUB_STEP_SUMMARY
+          "| $total | $executed | $passed | $failed | $skipped |" >> $env:GITHUB_STEP_SUMMARY
+
+          Write-Host "Total=$total Executed=$executed Passed=$passed Failed=$failed Skipped=$skipped"
+
       - name: Upload test results
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: test-results
           path: ./test-results
+          if-no-files-found: error
+          retention-days: 14
 
   format:
     runs-on: windows-latest
