@@ -100,7 +100,12 @@ jobs:
           $sourcePath = './publish/OnlyR/lame-3.100-source.tar.gz'
           $expectedHash = 'ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e'
 
-          Invoke-WebRequest -Uri $sourceUrl -OutFile $sourcePath
+          curl.exe --fail --location --retry 3 --output $sourcePath $sourceUrl
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Could not download LAME corresponding source"
+            exit 1
+          }
+
           $actualHash = (Get-FileHash $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actualHash -ne $expectedHash) {
             Write-Error "Unexpected LAME source SHA-256: $actualHash"
