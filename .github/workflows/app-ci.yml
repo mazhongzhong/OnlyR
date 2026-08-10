@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - feature/tray-integration
     paths:
       - '**/*.csproj'
       - '**/*.slnx'
@@ -16,6 +15,11 @@ on:
       - 'Directory.Packages.props'
       - 'Directory.Build.props'
       - '.github/workflows/app-ci.yml'
+      - '.github/workflows/release.yml'
+      - 'FORK-NOTICE.txt'
+      - 'THIRD-PARTY-NOTICES.txt'
+      - 'LAME-COPYING.txt'
+      - 'LICENSE'
   pull_request:
     branches:
       - master
@@ -31,6 +35,11 @@ on:
       - 'Directory.Packages.props'
       - 'Directory.Build.props'
       - '.github/workflows/app-ci.yml'
+      - '.github/workflows/release.yml'
+      - 'FORK-NOTICE.txt'
+      - 'THIRD-PARTY-NOTICES.txt'
+      - 'LAME-COPYING.txt'
+      - 'LICENSE'
 
 env:
   DOTNET_NOLOGO: true
@@ -72,14 +81,31 @@ jobs:
       - name: Publish portable test package
         run: dotnet publish OnlyR/OnlyR.csproj --configuration Release --runtime win-x86 --self-contained true --output ./publish/OnlyR -p:PublishSingleFile=false -p:PublishTrimmed=false -p:DebugType=None -p:DebugSymbols=false
 
+      - name: Add distribution notices
+        shell: pwsh
+        run: |
+          Copy-Item './LICENSE' './publish/OnlyR/LICENSE.txt'
+          Copy-Item './FORK-NOTICE.txt' './publish/OnlyR/FORK-NOTICE.txt'
+          Copy-Item './THIRD-PARTY-NOTICES.txt' './publish/OnlyR/THIRD-PARTY-NOTICES.txt'
+          Copy-Item './LAME-COPYING.txt' './publish/OnlyR/LAME-COPYING.txt'
+
       - name: Verify portable test package
         shell: pwsh
         run: |
           $publishFolder = './publish/OnlyR'
-          $executable = Join-Path $publishFolder 'OnlyR.exe'
-          if (-not (Test-Path $executable)) {
-            Write-Error "Portable executable not found: $executable"
-            exit 1
+          $requiredFiles = @(
+            'OnlyR.exe',
+            'LICENSE.txt',
+            'FORK-NOTICE.txt',
+            'THIRD-PARTY-NOTICES.txt',
+            'LAME-COPYING.txt'
+          )
+          foreach ($requiredFile in $requiredFiles) {
+            $requiredPath = Join-Path $publishFolder $requiredFile
+            if (-not (Test-Path $requiredPath)) {
+              Write-Error "Required portable file not found: $requiredPath"
+              exit 1
+            }
           }
 
           $files = Get-ChildItem $publishFolder -File -Recurse
